@@ -16,6 +16,7 @@ if "api_key" not in st.session_state or not st.session_state.api_key:
     st.warning("⚠️ Entrez votre clé API IA dans la page principale pour activer l'analyse IA.")
     st.stop()
 
+# Charger la clé API Groq
 os.environ["GROQ_API_KEY"] = st.session_state.api_key
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
@@ -53,7 +54,7 @@ if st.button("Analyser avec IA"):
 
         try:
             completion = client.chat.completions.create(
-                model="model="llama3-70b-8192",
+                model="llama3-70b-8192",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.4
             )
