@@ -1,4 +1,10 @@
 import streamlit as st
+
+# 🔒 Sécurité : bloque l'accès si pas connecté
+if "connecte" not in st.session_state or st.session_state.connecte is False:
+    st.error("⛔ Accès refusé. Veuillez activer votre licence pour utiliser cet outil.")
+    st.stop()
+
 import pandas as pd
 
 st.title("🤖 Robot Comparateur de Prix")
