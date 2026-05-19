@@ -1,4 +1,8 @@
 import streamlit as st
+
+groq_key = st.secrets["GROQ_API_KEY"]
+scrapedo_key = st.secrets["SCRAPEDO_API_KEY"]
+import streamlit as st
 import os
 from groq import Groq
 
