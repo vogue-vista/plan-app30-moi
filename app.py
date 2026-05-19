@@ -18,8 +18,6 @@ if "connecte" not in st.session_state:
     st.session_state.connecte = False
 
 st.title("🎛️ Stark Enterprise Suite")
-if "api_key" not in st.session_state:
-    st.session_state.api_key = ""
 
 # --- PAYWALL ---
 if not st.session_state.connecte:
@@ -72,3 +70,4 @@ with row2_col2:
 with row2_col3:
     if st.button("💼\n\nRéponses Client\nPro IA", use_container_width=True):
         st.switch_page("pages/6_💼_Reponses_Pro_IA.py")
+
