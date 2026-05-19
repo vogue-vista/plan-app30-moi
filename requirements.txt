@@ -2,3 +2,4 @@ streamlit
 groq
 beautifulsoup4
 requests
+pip install groq beautifulsoup4
