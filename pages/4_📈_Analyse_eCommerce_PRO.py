@@ -53,12 +53,13 @@ if st.button("Analyser avec IA"):
         """
 
         try:
-            completion = client.chat.completions.create(
-                model="llama3-8b-8192",
+           completion = client.chat.completions.create(
+    model="llama-3.1-8b-instant",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.4
+)
 
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.4
-            )
+            
 
             reponse = completion.choices[0].message.content
 
