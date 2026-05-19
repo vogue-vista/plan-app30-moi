@@ -18,6 +18,8 @@ if "connecte" not in st.session_state:
     st.session_state.connecte = False
 
 st.title("🎛️ Stark Enterprise Suite")
+if "api_key" not in st.session_state:
+    st.session_state.api_key = ""
 
 # --- PAYWALL ---
 if not st.session_state.connecte:
