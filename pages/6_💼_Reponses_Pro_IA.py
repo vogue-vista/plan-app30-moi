@@ -1,5 +1,11 @@
 import streamlit as st
 
+# 🔒 Sécurité : bloque l'accès si pas connecté
+if "connecte" not in st.session_state or st.session_state.connecte is False:
+    st.error("⛔ Accès refusé. Veuillez activer votre licence pour utiliser cet outil.")
+    st.stop()
+
+
 st.title("💼 Générateur de Réponses Professionnelles (IA)")
 
 st.write("Outil destiné aux entreprises pour répondre automatiquement aux messages clients.")
