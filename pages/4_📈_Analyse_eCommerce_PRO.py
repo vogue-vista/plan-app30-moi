@@ -1,44 +1,67 @@
 import streamlit as st
+import os
+from groq import Groq
 
-# 🔒 Sécurité : bloque l'accès si pas connecté
+# 🔒 Sécurité
 if "connecte" not in st.session_state or st.session_state.connecte is False:
-    st.error("⛔ Accès refusé. Veuillez activer votre licence pour utiliser cet outil.")
+    st.error("⛔ Accès refusé. Veuillez activer votre licence.")
     st.stop()
 
-import random
+st.title("📈 Analyseur de Produits e‑Commerce (IA PRO)")
 
-st.title("📈 Analyseur de Produits e‑Commerce (PRO)")
+st.write("Analyse intelligente basée sur l’IA : demande, concurrence, potentiel, viralité et recommandation.")
 
-st.write("Analyse la demande, la concurrence et la rentabilité potentielle d’un produit.")
+# Vérification clé API
+if "api_key" not in st.session_state or not st.session_state.api_key:
+    st.warning("⚠️ Entrez votre clé API IA dans la page principale pour activer l'analyse IA.")
+    st.stop()
+
+os.environ["GROQ_API_KEY"] = st.session_state.api_key
+client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
 mot_cle = st.text_input("Nom du produit à analyser :")
 
-if st.button("Analyser le marché"):
+if st.button("Analyser avec IA"):
     if mot_cle.strip() == "":
         st.error("Veuillez entrer un mot-clé.")
     else:
-        st.success(f"Analyse complète du marché pour : **{mot_cle}**")
+        st.info("⏳ Analyse IA en cours...")
 
-        # Simulations réalistes (tu pourras remplacer par scraping + IA)
-        demande = random.randint(40, 95)
-        concurrence = random.randint(20, 90)
-        prix_moyen = random.randint(10, 120)
-        viralite = random.randint(10, 100)
+        prompt = f"""
+        Analyse ce produit pour un e-commerce : {mot_cle}
 
-        st.subheader("📊 Résultats de l'analyse")
-        st.write(f"🔎 **Demande estimée :** {demande}/100")
-        st.write(f"⚔️ **Concurrence :** {concurrence}/100")
-        st.write(f"💰 **Prix moyen du marché :** {prix_moyen} $")
-        st.write(f"🔥 **Viralité estimée :** {viralite}/100")
+        Donne-moi :
+        - Demande estimée (0 à 100)
+        - Niveau de concurrence (0 à 100)
+        - Prix moyen du marché
+        - Niveau de viralité (TikTok, Google Trends)
+        - Analyse des risques
+        - Recommandation finale (lancer / tester / éviter)
+        - Résumé en 3 lignes
 
-        score_final = demande - concurrence + (viralite // 2)
+        Format JSON :
+        {{
+            "demande": "",
+            "concurrence": "",
+            "prix_moyen": "",
+            "viralite": "",
+            "risques": "",
+            "recommandation": "",
+            "resume": ""
+        }}
+        """
 
-        st.subheader("🧠 Recommandation IA (logique métier)")
-        if score_final > 70:
-            st.success("🔥 Excellent produit à lancer ! Forte demande et concurrence raisonnable.")
-        elif score_final > 40:
-            st.warning("🟡 Produit correct, mais nécessite une stratégie marketing solide.")
-        else:
-            st.error("❌ Produit risqué : faible potentiel ou marché saturé.")
+        try:
+            completion = client.chat.completions.create(
+                model="llama3-8b-8192",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.4
+            )
 
-        st.info("💡 Prochaine étape possible : brancher une vraie IA + données réelles (Amazon, Google Trends, etc.).")
+            reponse = completion.choices[0].message.content
+
+            st.subheader("📊 Résultats IA")
+            st.code(reponse)
+
+        except Exception as e:
+            st.error(f"Erreur IA : {e}")
