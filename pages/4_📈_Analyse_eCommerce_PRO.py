@@ -1,9 +1,4 @@
 import streamlit as st
-
-groq_key = st.secrets["GROQ_API_KEY"]
-scrapedo_key = st.secrets["SCRAPEDO_API_KEY"]
-import streamlit as st
-import os
 from groq import Groq
 
 # 🔒 Sécurité
@@ -14,15 +9,16 @@ if "connecte" not in st.session_state or st.session_state.connecte is False:
 st.title("📈 Analyseur de Produits e‑Commerce (IA PRO)")
 st.write("Analyse intelligente basée sur l’IA : demande, concurrence, potentiel, viralité et recommandation.")
 
-# Vérification clé API
-if "api_key" not in st.session_state or not st.session_state.api_key:
-    st.warning("⚠️ Entrez votre clé API IA dans la page principale pour activer l'analyse IA.")
+# 🔑 Clé IA sécurisée
+try:
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+except:
+    st.error("❌ Clé GROQ_API_KEY manquante dans les secrets Streamlit.")
     st.stop()
 
-# Charger la clé API Groq
-os.environ["GROQ_API_KEY"] = st.session_state.api_key
-client = Groq(api_key=os.environ["GROQ_API_KEY"])
+client = Groq(api_key=GROQ_API_KEY)
 
+# --- Interface ---
 mot_cle = st.text_input("Nom du produit à analyser :")
 
 if st.button("Analyser avec IA"):
@@ -32,34 +28,39 @@ if st.button("Analyser avec IA"):
         st.info("⏳ Analyse IA en cours...")
 
         prompt = f"""
-        Analyse ce produit pour un e-commerce : {mot_cle}
+Analyse ce produit pour un e-commerce : {mot_cle}
 
-        Donne-moi :
-        - Demande estimée (0 à 100)
-        - Niveau de concurrence (0 à 100)
-        - Prix moyen du marché
-        - Niveau de viralité (TikTok, Google Trends)
-        - Analyse des risques
-        - Recommandation finale (lancer / tester / éviter)
-        - Résumé en 3 lignes
+Donne-moi une analyse complète en format JSON strict :
 
-        Format JSON :
-        {{
-            "demande": "",
-            "concurrence": "",
-            "prix_moyen": "",
-            "viralite": "",
-            "risques": "",
-            "recommandation": "",
-            "resume": ""
-        }}
-        """
+- Demande estimée (0 à 100)
+- Niveau de concurrence (0 à 100)
+- Prix moyen du marché
+- Niveau de viralité (TikTok, Google Trends)
+- Analyse des risques
+- Recommandation finale (lancer / tester / éviter)
+- Résumé en 3 lignes
+
+Format JSON :
+{{
+    "demande": "",
+    "concurrence": "",
+    "prix_moyen": "",
+    "viralite": "",
+    "risques": "",
+    "recommandation": "",
+    "resume": ""
+}}
+"""
 
         try:
             completion = client.chat.completions.create(
                 model="llama-3.1-8b-instant",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.4
+                messages=[
+                    {"role": "system", "content": "Tu es un expert en analyse e-commerce."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.4,
+                max_tokens=600
             )
 
             reponse = completion.choices[0].message.content
