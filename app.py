@@ -22,6 +22,7 @@ if "api_key" not in st.session_state:
     st.session_state.api_key = ""
 
 # --- PAYWALL ---
+st.session_state.api_key = st.text_input("Clé API IA (Groq ou OpenAI)", type="password")
 if not st.session_state.connecte:
     st.subheader("💳 Activation de votre Licence Professionnelle (30$ / mois)")
     st.write("Accédez à la boîte à outils ultime automatisée pour votre e-commerce.")
